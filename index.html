@@ -1,568 +1,332 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LINE友だち登録カウンター</title>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LINE友だち登録カウンター</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1a1d23;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #06c755;
+    --accent-dark: #05a648;
+    --accent-soft: #e8f9ee;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #f5f6f8;
-      --card-bg: #ffffff;
-      --text: #1a1d23;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --accent: #06c755;
-      --accent-dark: #05a648;
-      --accent-soft: #e8f9ee;
-      --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --bg: #16181c; --card-bg: #1f2227; --text: #f0f1f3; --text-muted: #9aa0a8;
+      --border: #33373d; --accent: #06c755; --accent-dark: #08e065; --accent-soft: #113322;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #16181c;
-        --card-bg: #1f2227;
-        --text: #f0f1f3;
-        --text-muted: #9aa0a8;
-        --border: #33373d;
-        --accent: #06c755;
-        --accent-dark: #08e065;
-        --accent-soft: #113322;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-      }
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
-      min-height: 100vh;
-    }
-
-    .app {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 16px 16px 48px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 4px 18px;
-    }
-
-    header .logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    header h1 {
-      font-size: 17px;
-      margin: 0;
-      font-weight: 700;
-    }
-
-    header p {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .tabs {
-      display: flex;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .tab-btn {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      padding: 10px 8px;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
-    }
-
-    label {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    select {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 15px;
-      outline: none;
-    }
-
-    select:focus {
-      border-color: var(--accent);
-    }
-
-    .register-btn {
-      width: 100%;
-      margin-top: 18px;
-      padding: 20px;
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      background: var(--accent);
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(6, 199, 85, 0.35);
-      transition: transform .08s ease;
-    }
-
-    .register-btn:active {
-      transform: scale(0.97);
-    }
-
-    .register-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .today-stat {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px dashed var(--border);
-    }
-
-    .today-stat .num {
-      font-size: 30px;
-      font-weight: 800;
-      color: var(--accent-dark);
-    }
-
-    .today-stat .label {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 28px;
-      transform: translateX(-50%) translateY(10px);
-      background: var(--text);
-      color: var(--bg);
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      opacity: 0;
-      transition: opacity .25s ease, transform .25s ease;
-      pointer-events: none;
-      white-space: nowrap;
-      z-index: 50;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      font-size: 13px;
-      min-width: 480px;
-    }
-
-    th,
-    td {
-      padding: 9px 12px;
-      text-align: right;
-      white-space: nowrap;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th:first-child,
-    td:first-child {
-      text-align: left;
-      position: sticky;
-      left: 0;
-      background: var(--card-bg);
-    }
-
-    thead th {
-      background: var(--bg);
-      font-weight: 700;
-      color: var(--text-muted);
-      font-size: 12px;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    tfoot td {
-      font-weight: 800;
-      background: var(--bg);
-    }
-
-    .empty {
-      text-align: center;
-      padding: 36px 12px;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      align-items: center;
-    }
-
-    .filter-row select {
-      flex: 1;
-    }
-
-    .refresh-btn {
-      flex: 0 0 auto;
-      padding: 0 14px;
-      height: 42px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .muted-small {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 8px;
-    }
-
-    .setup-warning {
-      background: #fff4e5;
-      border: 1px solid #f5c07a;
-      color: #7a4b00;
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-bottom: 14px;
-    }
-  </style>
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    min-height: 100vh;
+  }
+  .app { max-width: 720px; margin: 0 auto; padding: 16px 16px 48px; }
+  header { display: flex; align-items: center; gap: 10px; padding: 14px 4px 18px; }
+  header .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  header h1 { font-size: 17px; margin: 0; font-weight: 700; }
+  header p { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
+  .tabs { display: flex; background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 4px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .tab-btn { flex: 1; border: none; background: transparent; color: var(--text-muted);
+    padding: 10px 8px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .tab-btn.active { background: var(--accent); color: #fff; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  label { font-size: 13px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 6px; }
+  select { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font-size: 15px; outline: none; }
+  select:focus { border-color: var(--accent); }
+  .register-btn { width: 100%; margin-top: 18px; padding: 20px; font-size: 20px; font-weight: 800;
+    color: #fff; background: var(--accent); border: none; border-radius: 16px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(6,199,85,0.35); transition: transform .08s ease; }
+  .register-btn:active { transform: scale(0.97); }
+  .register-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .today-stat { display: flex; align-items: baseline; justify-content: space-between;
+    margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); }
+  .today-stat .num { font-size: 30px; font-weight: 800; color: var(--accent-dark); }
+  .today-stat .label { font-size: 13px; color: var(--text-muted); }
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(10px);
+    background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; opacity: 0; transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none; white-space: nowrap; z-index: 50; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 480px; }
+  th, td { padding: 9px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--border); }
+  th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--card-bg); }
+  thead th { background: var(--bg); font-weight: 700; color: var(--text-muted); font-size: 12px; }
+  tbody tr:last-child td { border-bottom: none; }
+  tfoot td { font-weight: 800; background: var(--bg); }
+  .empty { text-align: center; padding: 36px 12px; color: var(--text-muted); font-size: 14px; }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+  .filter-row select { flex: 1; }
+  .refresh-btn { flex: 0 0 auto; padding: 0 14px; height: 42px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; cursor: pointer; }
+  .hidden { display: none !important; }
+  .muted-small { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+  .setup-warning { background: #fff4e5; border: 1px solid #f5c07a; color: #7a4b00; padding: 12px 14px;
+    border-radius: 10px; font-size: 13px; margin-bottom: 14px; }
+</style>
 </head>
-
 <body>
-  <div class="app">
-    <header>
-      <div class="logo">📇</div>
-      <div>
-        <h1>LINE友だち登録カウンター</h1>
-        <p>会計時に登録した人数を記録・集計します</p>
-      </div>
-    </header>
-
-    <div id="setupWarning" class="setup-warning hidden">
-
-      <code>https://script.google.com/macros/s/AKfycbw8KMrTDDZ11EaVHX5toURwC2A7UenYK-7GB3ySCGTGC_kz4pZG5LpAmkXy25_04Jethw/exec</code>
-
+<div class="app">
+  <header>
+    <div class="logo">📇</div>
+    <div>
+      <h1>LINE友だち登録カウンター</h1>
+      <p>会計時に登録した人数を記録・集計します</p>
     </div>
+  </header>
 
-    <div class="tabs">
-      <button class="tab-btn active" id="tabRegister">登録</button>
-      <button class="tab-btn" id="tabSummary">集計</button>
-    </div>
+  <div id="setupWarning" class="setup-warning hidden">
+    ⚠️ API_URL が設定されていません。index.html 内の <code>API_URL</code> に、
+    デプロイした Google Apps Script のウェブアプリURLを設定してください。
+  </div>
 
-    <div id="viewRegister">
-      <div class="card">
-        <label for="storeSelect">店舗</label>
-        <select id="storeSelect"></select>
+  <div class="tabs">
+    <button class="tab-btn active" id="tabRegister">登録</button>
+    <button class="tab-btn" id="tabSummary">集計</button>
+  </div>
 
-        <button class="register-btn" id="registerBtn">＋ 1件登録する</button>
+  <div id="viewRegister">
+    <div class="card">
+      <label for="storeSelect">店舗</label>
+      <select id="storeSelect"></select>
 
-        <div class="today-stat">
-          <div>
-            <div class="label" id="todayLabel">本日の登録数</div>
-          </div>
-          <div class="num" id="todayCount">–</div>
-        </div>
-        <p class="muted-small">日付は日本時間(Asia/Tokyo)基準で自動記録されます。</p>
+      <button class="register-btn" id="registerBtn">＋ 1件登録する</button>
+
+      <div class="today-stat">
+        <div><div class="label" id="todayLabel">本日の登録数</div></div>
+        <div class="num" id="todayCount">–</div>
       </div>
-    </div>
-
-    <div id="viewSummary" class="hidden">
-      <div class="card">
-        <div class="filter-row">
-          <select id="rangeFilter">
-            <option value="14">直近14日</option>
-            <option value="30" selected>直近30日</option>
-            <option value="90">直近90日</option>
-            <option value="9999">すべて</option>
-          </select>
-          <button class="refresh-btn" id="refreshBtn">🔄 更新</button>
-        </div>
-        <div class="table-wrap">
-          <table id="summaryTable">
-            <thead>
-              <tr id="summaryHead"></tr>
-            </thead>
-            <tbody id="summaryBody"></tbody>
-            <tfoot>
-              <tr id="summaryFoot"></tr>
-            </tfoot>
-          </table>
-        </div>
-        <div class="empty hidden" id="summaryEmpty">まだ登録データがありません</div>
-        <p class="muted-small">
-          「更新」を押すと最新の集計を取得します(自動更新ではありません)。元データはこの裏側のGoogleスプレッドシートに直接記録されているので、スプレッドシート側でピボットテーブル等を作ることもできます。</p>
-      </div>
+      <p class="muted-small">日付は日本時間(Asia/Tokyo)基準で自動記録されます。</p>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div id="viewSummary" class="hidden">
+    <div class="card">
+      <div class="filter-row">
+        <select id="rangeFilter">
+          <option value="14">直近14日</option>
+          <option value="30" selected>直近30日</option>
+          <option value="90">直近90日</option>
+          <option value="9999">すべて</option>
+        </select>
+        <button class="refresh-btn" id="refreshBtn">🔄 更新</button>
+      </div>
+      <div class="table-wrap">
+        <table id="summaryTable">
+          <thead><tr id="summaryHead"></tr></thead>
+          <tbody id="summaryBody"></tbody>
+          <tfoot><tr id="summaryFoot"></tr></tfoot>
+        </table>
+      </div>
+      <div class="empty hidden" id="summaryEmpty">まだ登録データがありません</div>
+      <p class="muted-small">「更新」を押すと最新の集計を取得します(自動更新ではありません)。元データはこの裏側のGoogleスプレッドシートに直接記録されているので、スプレッドシート側でピボットテーブル等を作ることもできます。</p>
+    </div>
+  </div>
+</div>
 
-  <script>
-    (function () {
-      // ▼▼▼ ここに Google Apps Script のウェブアプリURLを設定してください ▼▼▼
-      // 例: 'https://script.google.com/macros/s/AKfycb.../exec'
-      const API_URL = 'https://script.google.com/macros/s/AKfycbw8KMrTDDZ11EaVHX5toURwC2A7UenYK-7GB3ySCGTGC_kz4pZG5LpAmkXy25_04Jethw/exec';
-      // ▲▲▲ ここまで ▲▲▲
+<div class="toast" id="toast"></div>
 
-      const STORES = [
-        'グランスタ東京店',
-        '横浜赤レンガ倉庫店',
-        '成田国際空港第2ターミナル店',
-        'アトレ吉祥寺店',
-        '東京スカイツリータウン・ソラマチ店',
-        'ラフォーレ原宿店',
-        'ルクア イーレ店',
-        '天神地下街店',
-        'PARCO_ya上野店',
-      ];
+<script>
+(function () {
+  // ▼▼▼ ここに Google Apps Script のウェブアプリURLを設定してください ▼▼▼
+  // 例: 'https://script.google.com/macros/s/AKfycb.../exec'
+  const API_URL = 'PUT_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+  // ▲▲▲ ここまで ▲▲▲
 
-      let summaryRows = []; // [{store, date, count}]
+  const STORES = [
+    'グランスタ東京店',
+    '横浜赤レンガ倉庫店',
+    '成田国際空港第2ターミナル店',
+    'アトレ吉祥寺店',
+    '東京スカイツリータウン・ソラマチ店',
+    'ラフォーレ原宿店',
+    'ルクア イーレ店',
+    '天神地下街店',
+    'PARCO_ya上野店',
+  ];
 
-      const el = {
-        setupWarning: document.getElementById('setupWarning'),
-        tabRegister: document.getElementById('tabRegister'),
-        tabSummary: document.getElementById('tabSummary'),
-        viewRegister: document.getElementById('viewRegister'),
-        viewSummary: document.getElementById('viewSummary'),
-        storeSelect: document.getElementById('storeSelect'),
-        registerBtn: document.getElementById('registerBtn'),
-        todayCount: document.getElementById('todayCount'),
-        todayLabel: document.getElementById('todayLabel'),
-        toast: document.getElementById('toast'),
-        rangeFilter: document.getElementById('rangeFilter'),
-        refreshBtn: document.getElementById('refreshBtn'),
-        summaryHead: document.getElementById('summaryHead'),
-        summaryBody: document.getElementById('summaryBody'),
-        summaryFoot: document.getElementById('summaryFoot'),
-        summaryEmpty: document.getElementById('summaryEmpty'),
-        summaryTable: document.getElementById('summaryTable'),
-      };
+  let summaryRows = []; // [{store, date, count}]
 
-      if (!API_URL || API_URL.indexOf('PUT_YOUR') === 0) {
-        el.setupWarning.classList.remove('hidden');
-        el.registerBtn.disabled = true;
-      }
+  const el = {
+    setupWarning: document.getElementById('setupWarning'),
+    tabRegister: document.getElementById('tabRegister'),
+    tabSummary: document.getElementById('tabSummary'),
+    viewRegister: document.getElementById('viewRegister'),
+    viewSummary: document.getElementById('viewSummary'),
+    storeSelect: document.getElementById('storeSelect'),
+    registerBtn: document.getElementById('registerBtn'),
+    todayCount: document.getElementById('todayCount'),
+    todayLabel: document.getElementById('todayLabel'),
+    toast: document.getElementById('toast'),
+    rangeFilter: document.getElementById('rangeFilter'),
+    refreshBtn: document.getElementById('refreshBtn'),
+    summaryHead: document.getElementById('summaryHead'),
+    summaryBody: document.getElementById('summaryBody'),
+    summaryFoot: document.getElementById('summaryFoot'),
+    summaryEmpty: document.getElementById('summaryEmpty'),
+    summaryTable: document.getElementById('summaryTable'),
+  };
 
-      function todayJST() {
-        return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(new Date());
-      }
+  if (!API_URL || API_URL.indexOf('PUT_YOUR') === 0) {
+    el.setupWarning.classList.remove('hidden');
+    el.registerBtn.disabled = true;
+  }
 
-      function showToast(msg) {
-        el.toast.textContent = msg;
-        el.toast.classList.add('show');
-        clearTimeout(showToast._t);
-        showToast._t = setTimeout(() => el.toast.classList.remove('show'), 1600);
-      }
+  function todayJST() {
+    return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(new Date());
+  }
 
-      function switchTab(which) {
-        const isReg = which === 'register';
-        el.tabRegister.classList.toggle('active', isReg);
-        el.tabSummary.classList.toggle('active', !isReg);
-        el.viewRegister.classList.toggle('hidden', !isReg);
-        el.viewSummary.classList.toggle('hidden', isReg);
-        if (!isReg) fetchSummary();
-      }
-      el.tabRegister.addEventListener('click', () => switchTab('register'));
-      el.tabSummary.addEventListener('click', () => switchTab('summary'));
+  function showToast(msg) {
+    el.toast.textContent = msg;
+    el.toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => el.toast.classList.remove('show'), 1600);
+  }
 
-      function populateStores() {
-        STORES.forEach((s) => {
-          const opt = document.createElement('option');
-          opt.value = s;
-          opt.textContent = s;
-          el.storeSelect.appendChild(opt);
-        });
-      }
-      el.storeSelect.addEventListener('change', updateTodayCount);
+  function switchTab(which) {
+    const isReg = which === 'register';
+    el.tabRegister.classList.toggle('active', isReg);
+    el.tabSummary.classList.toggle('active', !isReg);
+    el.viewRegister.classList.toggle('hidden', !isReg);
+    el.viewSummary.classList.toggle('hidden', isReg);
+    if (!isReg) fetchSummary();
+  }
+  el.tabRegister.addEventListener('click', () => switchTab('register'));
+  el.tabSummary.addEventListener('click', () => switchTab('summary'));
 
-      function updateTodayCount() {
-        const store = el.storeSelect.value;
-        const date = todayJST();
-        const row = summaryRows.find((r) => r.store === store && r.date === date);
-        el.todayCount.textContent = row ? row.count : 0;
-        el.todayLabel.textContent = store ? store + ' の本日の登録数' : '本日の登録数';
-      }
+  function populateStores() {
+    STORES.forEach((s) => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      el.storeSelect.appendChild(opt);
+    });
+  }
+  el.storeSelect.addEventListener('change', updateTodayCount);
 
-      async function registerOne() {
-        const store = el.storeSelect.value;
-        if (!store) return;
-        el.registerBtn.disabled = true;
-        try {
-          const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // プリフライトを避けるため text/plain で送信
-            body: JSON.stringify({ store, date: todayJST() }),
-          });
-          const data = await res.json();
-          if (data.ok) {
-            showToast('登録しました！');
-            // 楽観的にローカルの本日カウントを+1
-            const date = todayJST();
-            const row = summaryRows.find((r) => r.store === store && r.date === date);
-            if (row) row.count += 1;
-            else summaryRows.push({ store, date, count: 1 });
-            updateTodayCount();
-          } else {
-            showToast('登録に失敗しました: ' + (data.error || '不明なエラー'));
-          }
-        } catch (e) {
-          showToast('通信に失敗しました。ネットワークを確認してください');
-        } finally {
-          el.registerBtn.disabled = false;
-        }
-      }
-      el.registerBtn.addEventListener('click', registerOne);
-      el.refreshBtn.addEventListener('click', fetchSummary);
-      el.rangeFilter.addEventListener('change', renderSummary);
+  function updateTodayCount() {
+    const store = el.storeSelect.value;
+    const date = todayJST();
+    const row = summaryRows.find((r) => r.store === store && r.date === date);
+    el.todayCount.textContent = row ? row.count : 0;
+    el.todayLabel.textContent = store ? store + ' の本日の登録数' : '本日の登録数';
+  }
 
-      async function fetchSummary() {
-        if (!API_URL || API_URL.indexOf('PUT_YOUR') === 0) return;
-        el.refreshBtn.disabled = true;
-        el.refreshBtn.textContent = '…';
-        try {
-          const res = await fetch(API_URL + '?action=summary');
-          const data = await res.json();
-          summaryRows = data.rows || [];
-          updateTodayCount();
-          renderSummary();
-        } catch (e) {
-          showToast('集計の取得に失敗しました');
-        } finally {
-          el.refreshBtn.disabled = false;
-          el.refreshBtn.textContent = '🔄 更新';
-        }
-      }
-
-      function renderSummary() {
-        const rangeDays = parseInt(el.rangeFilter.value, 10);
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - rangeDays);
-        const cutoffStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(cutoff);
-
-        const filtered = summaryRows.filter((r) => rangeDays >= 9999 || r.date >= cutoffStr);
-        const dateSet = new Set(filtered.map((r) => r.date));
-        const storeSet = new Set(STORES);
-        filtered.forEach((r) => storeSet.add(r.store));
-
-        const dates = Array.from(dateSet).sort().reverse();
-        const storeList = Array.from(storeSet); // 表示順は元の店舗リストの並び優先
-
-        if (dates.length === 0) {
-          el.summaryTable.classList.add('hidden');
-          el.summaryEmpty.classList.remove('hidden');
-          return;
-        }
-        el.summaryTable.classList.remove('hidden');
-        el.summaryEmpty.classList.add('hidden');
-
-        el.summaryHead.innerHTML = '<th>日付</th>' + storeList.map((s) => `<th>${escapeHtml(s)}</th>`).join('') + '<th>合計</th>';
-
-        const storeTotals = {};
-        storeList.forEach((s) => (storeTotals[s] = 0));
-        let grandTotal = 0;
-
-        let bodyHtml = '';
-        dates.forEach((date) => {
-          let rowTotal = 0;
-          const cells = storeList.map((s) => {
-            const row = filtered.find((r) => r.store === s && r.date === date);
-            const c = row ? row.count : 0;
-            rowTotal += c;
-            storeTotals[s] += c;
-            return `<td>${c || ''}</td>`;
-          }).join('');
-          grandTotal += rowTotal;
-          bodyHtml += `<tr><td>${date}</td>${cells}<td>${rowTotal}</td></tr>`;
-        });
-        el.summaryBody.innerHTML = bodyHtml;
-        el.summaryFoot.innerHTML = '<td>合計</td>' + storeList.map((s) => `<td>${storeTotals[s]}</td>`).join('') + `<td>${grandTotal}</td>`;
-      }
-
-      function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-      }
-
-      populateStores();
+  async function registerOne() {
+    const store = el.storeSelect.value;
+    if (!store) return;
+    el.registerBtn.disabled = true;
+    try {
+      // Apps Script の POST は redirect 経由のレスポンスに CORS ヘッダーが
+      // 付かないことがあり、fetch がレスポンスを読み取れず失敗することがある。
+      // no-cors で送ることで「送信自体」は行い、結果の読み取りは行わない。
+      await fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // プリフライトを避けるため text/plain で送信
+        body: JSON.stringify({ store, date: todayJST() }),
+      });
+      showToast('登録しました！');
+      // 楽観的にローカルの本日カウントを+1(no-corsのため実際の成否は確認できない)
+      const date = todayJST();
+      const row = summaryRows.find((r) => r.store === store && r.date === date);
+      if (row) row.count += 1;
+      else summaryRows.push({ store, date, count: 1 });
       updateTodayCount();
-      if (API_URL && API_URL.indexOf('PUT_YOUR') !== 0) fetchSummary();
-    })();
-  </script>
-</body>
+    } catch (e) {
+      showToast('通信に失敗しました。ネットワークを確認してください');
+    } finally {
+      el.registerBtn.disabled = false;
+    }
+  }
+  el.registerBtn.addEventListener('click', registerOne);
+  el.refreshBtn.addEventListener('click', fetchSummary);
+  el.rangeFilter.addEventListener('change', renderSummary);
 
+  async function fetchSummary() {
+    if (!API_URL || API_URL.indexOf('PUT_YOUR') === 0) return;
+    el.refreshBtn.disabled = true;
+    el.refreshBtn.textContent = '…';
+    try {
+      const res = await fetch(API_URL + '?action=summary');
+      const data = await res.json();
+      summaryRows = data.rows || [];
+      updateTodayCount();
+      renderSummary();
+    } catch (e) {
+      showToast('集計の取得に失敗しました');
+    } finally {
+      el.refreshBtn.disabled = false;
+      el.refreshBtn.textContent = '🔄 更新';
+    }
+  }
+
+  function renderSummary() {
+    const rangeDays = parseInt(el.rangeFilter.value, 10);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - rangeDays);
+    const cutoffStr = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(cutoff);
+
+    const filtered = summaryRows.filter((r) => rangeDays >= 9999 || r.date >= cutoffStr);
+    const dateSet = new Set(filtered.map((r) => r.date));
+    const storeSet = new Set(STORES);
+    filtered.forEach((r) => storeSet.add(r.store));
+
+    const dates = Array.from(dateSet).sort().reverse();
+    const storeList = Array.from(storeSet); // 表示順は元の店舗リストの並び優先
+
+    if (dates.length === 0) {
+      el.summaryTable.classList.add('hidden');
+      el.summaryEmpty.classList.remove('hidden');
+      return;
+    }
+    el.summaryTable.classList.remove('hidden');
+    el.summaryEmpty.classList.add('hidden');
+
+    el.summaryHead.innerHTML = '<th>日付</th>' + storeList.map((s) => `<th>${escapeHtml(s)}</th>`).join('') + '<th>合計</th>';
+
+    const storeTotals = {};
+    storeList.forEach((s) => (storeTotals[s] = 0));
+    let grandTotal = 0;
+
+    let bodyHtml = '';
+    dates.forEach((date) => {
+      let rowTotal = 0;
+      const cells = storeList.map((s) => {
+        const row = filtered.find((r) => r.store === s && r.date === date);
+        const c = row ? row.count : 0;
+        rowTotal += c;
+        storeTotals[s] += c;
+        return `<td>${c || ''}</td>`;
+      }).join('');
+      grandTotal += rowTotal;
+      bodyHtml += `<tr><td>${date}</td>${cells}<td>${rowTotal}</td></tr>`;
+    });
+    el.summaryBody.innerHTML = bodyHtml;
+    el.summaryFoot.innerHTML = '<td>合計</td>' + storeList.map((s) => `<td>${storeTotals[s]}</td>`).join('') + `<td>${grandTotal}</td>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  populateStores();
+  updateTodayCount();
+  if (API_URL && API_URL.indexOf('PUT_YOUR') !== 0) fetchSummary();
+})();
+</script>
+</body>
 </html>
